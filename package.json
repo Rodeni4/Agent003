@@ -1,0 +1,18 @@
+{
+  "name": "electronsocialposter",
+  "productName": "Electron Social Poster",
+  "version": "1.0.0",
+  "description": "ElectronSocialPoster",
+  "main": "dist/main/main.js",
+  "scripts": {
+    "build": "tsc && npm run copy-static",
+    "copy-static": "copyfiles -u 1 \"src/renderer/index.html\" \"src/renderer/styles/**/*\" dist",
+    "start": "npm run build && electron ."
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "copyfiles": "^2.4.1",
+    "electron": "^25.2.0",
+    "typescript": "^5.8.3"
+  }
+}
