@@ -7,7 +7,7 @@ contextBridge.exposeInMainWorld('okAPI', {
   publishTextPost: (payload: {
     text: string;
     debug: boolean;
-    imagePath?: string;
+    imagePaths?: string[];
     publishToWall: boolean;
     publishToGroup: boolean;
     groupValue?: string;

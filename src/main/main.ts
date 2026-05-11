@@ -47,7 +47,7 @@ app.whenReady().then(() => {
       payload: {
         text: string;
         debug: boolean;
-        imagePath?: string;
+        imagePaths?: string[];
         publishToWall: boolean;
         publishToGroup: boolean;
         groupValue?: string;
@@ -56,7 +56,7 @@ app.whenReady().then(() => {
       return publishOkTextPost({
         text: payload.text,
         debug: payload.debug,
-        imagePath: payload.imagePath,
+        imagePaths: payload.imagePaths,
         publishToWall: payload.publishToWall,
         publishToGroup: payload.publishToGroup,
         groupValue: payload.groupValue,

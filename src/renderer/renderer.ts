@@ -12,7 +12,7 @@ type OkAPI = {
   publishTextPost: (payload: {
     text: string;
     debug: boolean;
-    imagePath?: string;
+    imagePaths?: string[];
     publishToWall: boolean;
     publishToGroup: boolean;
     groupValue?: string;
@@ -244,13 +244,14 @@ document.addEventListener('DOMContentLoaded', () => {
       publishOkBtn.disabled = true;
       showStatus('Публикуем пост в OK...');
 
-      const imageFile = postImage?.files?.[0] as File & { path?: string } | undefined;
-      const imagePath = imageFile?.path;
+      const imagePaths = Array.from(postImage?.files || [])
+        .map((file) => (file as File & { path?: string }).path)
+        .filter((path): path is string => Boolean(path));
 
       const result = await window.okAPI?.publishTextPost({
         text,
         debug: Boolean(debugMode?.checked),
-        imagePath,
+        imagePaths,
         publishToWall: Boolean(publishToWall?.checked),
         publishToGroup: Boolean(publishToGroup?.checked),
         groupValue: okGroupInput?.value.trim() || undefined,
