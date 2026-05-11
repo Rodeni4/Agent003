@@ -9,6 +9,7 @@ type OkAPI = {
   openLogin: () => Promise<OkResult>;
   checkSession: () => Promise<OkResult>;
   resetSession: () => Promise<OkResult>;
+  publishTextPost: (payload: { text: string; debug: boolean; imagePath?: string }) => Promise<OkResult>;
 };
 
 interface Window {
@@ -18,6 +19,11 @@ interface Window {
 document.addEventListener('DOMContentLoaded', () => {
   const openOkBtn = document.getElementById('openOkBtn') as HTMLButtonElement | null;
   const resetOkBtn = document.getElementById('resetOkBtn') as HTMLButtonElement | null;
+  const publishOkBtn = document.getElementById('publishOkBtn') as HTMLButtonElement | null;
+  const postText = document.getElementById('postText') as HTMLTextAreaElement | null;
+  const debugMode = document.getElementById('debugMode') as HTMLInputElement | null;
+  const postImage = document.getElementById('postImage') as HTMLInputElement | null;
+
   const okStatusBadge = document.getElementById('okStatusBadge');
   const statusBox = document.getElementById('statusBox');
 
@@ -145,6 +151,39 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     } catch (error) {
       setOkDisconnected(error instanceof Error ? error.message : 'Ошибка сброса сессии OK.');
+    }
+  });
+
+  publishOkBtn?.addEventListener('click', async () => {
+    const text = postText?.value.trim() || '';
+
+    if (!text) {
+      showStatus('Введите текст поста.');
+      return;
+    }
+
+    try {
+      publishOkBtn.disabled = true;
+      showStatus('Публикуем текстовый пост в OK...');
+
+      const imageFile = postImage?.files?.[0] as File & { path?: string } | undefined;
+      const imagePath = imageFile?.path;
+
+      const result = await window.okAPI?.publishTextPost({
+        text,
+        debug: Boolean(debugMode?.checked),
+        imagePath,
+      });
+
+      if (result?.success) {
+        showStatus(result.message || 'Пост опубликован.');
+      } else {
+        showStatus(result?.message || 'Не удалось опубликовать пост.');
+      }
+    } catch (error) {
+      showStatus(error instanceof Error ? error.message : 'Ошибка публикации.');
+    } finally {
+      publishOkBtn.disabled = false;
     }
   });
 
