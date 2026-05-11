@@ -1,15 +1,53 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
   <meta charset="UTF-8" />
   <title>Agent003</title>
   <link rel="stylesheet" href="./styles/main.css" />
 </head>
+
 <body>
-  <h1>Жми кнопку!</h1>
-  <button id="helloButton">Привет, Мир!</button>
-  <div id="message"></div>
+  <main class="app">
+    <section class="card">
+      <div class="card-header">
+        <span id="okStatusBadge" class="badge disconnected">Проверяем OK...</span>
+      </div>
+
+      <div id="okProfileBox" class="profile-box hidden">
+        <div>
+          <div id="okProfileName" class="profile-name"></div>
+          <a id="okProfileLink" href="#" target="_blank">Открыть профиль</a>
+        </div>
+
+        <button id="resetOkBtn" class="icon-btn" title="Сменить аккаунт OK">🗑</button>
+      </div>
+
+      <div class="actions">
+        <button id="openOkBtn">Подключение OK</button>
+      </div>
+
+      <div id="statusBox" class="status hidden"></div>
+    </section>
+
+    <section class="card">
+      <h2>Публикация</h2>
+
+      <div class="field">
+        <label for="postText">Текст поста</label>
+        <textarea id="postText" placeholder="Введите текст поста"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="postImage">Картинка</label>
+        <input id="postImage" type="file" accept="image/*" />
+      </div>
+
+      <button id="publishOkBtn" class="publish-btn">Опубликовать в OK</button>
+    </section>
+  </main>
 
   <script src="./renderer.js"></script>
 </body>
+
 </html>

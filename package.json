@@ -14,5 +14,8 @@
     "copyfiles": "^2.4.1",
     "electron": "^25.2.0",
     "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "playwright": "^1.59.1"
   }
 }
