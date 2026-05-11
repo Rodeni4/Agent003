@@ -42,11 +42,24 @@ app.whenReady().then(() => {
 
   ipcMain.handle(
     'ok:publish-text-post',
-    async (_event, payload: { text: string; debug: boolean; imagePath?: string }) => {
+    async (
+      _event,
+      payload: {
+        text: string;
+        debug: boolean;
+        imagePath?: string;
+        publishToWall: boolean;
+        publishToGroup: boolean;
+        groupValue?: string;
+      }
+    ) => {
       return publishOkTextPost({
         text: payload.text,
         debug: payload.debug,
         imagePath: payload.imagePath,
+        publishToWall: payload.publishToWall,
+        publishToGroup: payload.publishToGroup,
+        groupValue: payload.groupValue,
         okProfilePath: getOkProfilePath(),
       });
     }

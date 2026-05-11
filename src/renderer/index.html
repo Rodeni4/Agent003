@@ -15,6 +15,7 @@
         Отладка
       </label>
     </section>
+
     <section class="card">
       <div class="card-header">
         <span id="okStatusBadge" class="badge disconnected">Проверяем OK...</span>
@@ -39,6 +40,31 @@
     <section class="card">
       <h2>Публикация</h2>
 
+      <div class="platform-target-card">
+        <div class="platform-target-title">Одноклассники</div>
+
+        <div class="target-box">
+          <label class="checkbox-label">
+            <input id="publishToWall" type="checkbox" checked />
+            На стену OK
+          </label>
+
+          <label class="checkbox-label">
+            <input id="publishToGroup" type="checkbox" />
+            В группу OK
+          </label>
+        </div>
+      </div>
+
+      <div id="okGroupField" class="field hidden">
+        <label for="okGroupInput">Группа OK</label>
+        <input
+          id="okGroupInput"
+          type="text"
+          placeholder="ID группы или ссылка, например https://ok.ru/group/53735043432516"
+        />
+      </div>
+
       <div class="field">
         <label for="postText">Текст поста</label>
         <textarea id="postText" placeholder="Введите текст поста"></textarea>
@@ -56,4 +82,4 @@
   <script src="./renderer.js"></script>
 </body>
 
-</html>
+</html> 

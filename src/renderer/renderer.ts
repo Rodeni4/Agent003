@@ -9,7 +9,14 @@ type OkAPI = {
   openLogin: () => Promise<OkResult>;
   checkSession: () => Promise<OkResult>;
   resetSession: () => Promise<OkResult>;
-  publishTextPost: (payload: { text: string; debug: boolean; imagePath?: string }) => Promise<OkResult>;
+  publishTextPost: (payload: {
+    text: string;
+    debug: boolean;
+    imagePath?: string;
+    publishToWall: boolean;
+    publishToGroup: boolean;
+    groupValue?: string;
+  }) => Promise<OkResult>;
 };
 
 interface Window {
@@ -20,9 +27,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const openOkBtn = document.getElementById('openOkBtn') as HTMLButtonElement | null;
   const resetOkBtn = document.getElementById('resetOkBtn') as HTMLButtonElement | null;
   const publishOkBtn = document.getElementById('publishOkBtn') as HTMLButtonElement | null;
+
   const postText = document.getElementById('postText') as HTMLTextAreaElement | null;
   const debugMode = document.getElementById('debugMode') as HTMLInputElement | null;
   const postImage = document.getElementById('postImage') as HTMLInputElement | null;
+
+  const publishToWall = document.getElementById('publishToWall') as HTMLInputElement | null;
+  const publishToGroup = document.getElementById('publishToGroup') as HTMLInputElement | null;
+  const okGroupField = document.getElementById('okGroupField');
+  const okGroupInput = document.getElementById('okGroupInput') as HTMLInputElement | null;
 
   const okStatusBadge = document.getElementById('okStatusBadge');
   const statusBox = document.getElementById('statusBox');
@@ -30,6 +43,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const okProfileBox = document.getElementById('okProfileBox');
   const okProfileName = document.getElementById('okProfileName');
   const okProfileLink = document.getElementById('okProfileLink') as HTMLAnchorElement | null;
+
+  function getErrorMessage(error: unknown, fallbackMessage: string) {
+    return error instanceof Error ? error.message : fallbackMessage;
+  }
+
+  function updateGroupFieldVisibility() {
+    if (publishToGroup?.checked) {
+      okGroupField?.classList.remove('hidden');
+    } else {
+      okGroupField?.classList.add('hidden');
+    }
+  }
+
+  publishToGroup?.addEventListener('change', updateGroupFieldVisibility);
+  updateGroupFieldVisibility();
 
   function showStatus(message: string) {
     if (!statusBox) return;
@@ -134,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setOkDisconnected(result?.message || 'OK не подключён.');
       }
     } catch (error) {
-      setOkDisconnected(error instanceof Error ? error.message : 'Ошибка открытия OK.');
+      setOkDisconnected(getErrorMessage(error, 'Ошибка открытия OK.'));
     }
   });
 
@@ -150,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setOkDisconnected(result?.message || 'Не удалось сбросить сессию OK.');
       }
     } catch (error) {
-      setOkDisconnected(error instanceof Error ? error.message : 'Ошибка сброса сессии OK.');
+      setOkDisconnected(getErrorMessage(error, 'Ошибка сброса сессии OK.'));
     }
   });
 
@@ -162,9 +190,19 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    if (!publishToWall?.checked && !publishToGroup?.checked) {
+      showStatus('Выберите, куда публиковать: на стену OK или в группу OK.');
+      return;
+    }
+
+    if (publishToGroup?.checked && !okGroupInput?.value.trim()) {
+      showStatus('Укажите ID или ссылку группы OK.');
+      return;
+    }
+
     try {
       publishOkBtn.disabled = true;
-      showStatus('Публикуем текстовый пост в OK...');
+      showStatus('Публикуем пост в OK...');
 
       const imageFile = postImage?.files?.[0] as File & { path?: string } | undefined;
       const imagePath = imageFile?.path;
@@ -173,6 +211,9 @@ document.addEventListener('DOMContentLoaded', () => {
         text,
         debug: Boolean(debugMode?.checked),
         imagePath,
+        publishToWall: Boolean(publishToWall?.checked),
+        publishToGroup: Boolean(publishToGroup?.checked),
+        groupValue: okGroupInput?.value.trim() || undefined,
       });
 
       if (result?.success) {
@@ -181,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showStatus(result?.message || 'Не удалось опубликовать пост.');
       }
     } catch (error) {
-      showStatus(error instanceof Error ? error.message : 'Ошибка публикации.');
+      showStatus(getErrorMessage(error, 'Ошибка публикации.'));
     } finally {
       publishOkBtn.disabled = false;
     }
