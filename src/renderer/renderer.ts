@@ -32,10 +32,50 @@ document.addEventListener('DOMContentLoaded', () => {
   const debugMode = document.getElementById('debugMode') as HTMLInputElement | null;
   const postImage = document.getElementById('postImage') as HTMLInputElement | null;
 
+  if (postImage) {
+    const clearPostImageBtn = document.createElement('button');
+    clearPostImageBtn.type = 'button';
+    clearPostImageBtn.className = 'clear-input-btn';
+    clearPostImageBtn.title = 'Очистить картинку';
+    clearPostImageBtn.textContent = '🗑';
+
+    postImage.insertAdjacentElement('afterend', clearPostImageBtn);
+    postImage.parentElement?.classList.add('input-with-clear');
+
+    clearPostImageBtn.addEventListener('click', () => {
+      postImage.value = '';
+    });
+  }
+
   const publishToWall = document.getElementById('publishToWall') as HTMLInputElement | null;
   const publishToGroup = document.getElementById('publishToGroup') as HTMLInputElement | null;
   const okGroupField = document.getElementById('okGroupField');
   const okGroupInput = document.getElementById('okGroupInput') as HTMLInputElement | null;
+
+  const OK_GROUP_STORAGE_KEY = 'agent003.okGroupValue';
+
+  if (okGroupInput) {
+    okGroupInput.value = localStorage.getItem(OK_GROUP_STORAGE_KEY) || '';
+
+    okGroupInput.addEventListener('input', () => {
+      localStorage.setItem(OK_GROUP_STORAGE_KEY, okGroupInput.value);
+    });
+
+    const clearOkGroupBtn = document.createElement('button');
+    clearOkGroupBtn.type = 'button';
+    clearOkGroupBtn.className = 'clear-input-btn';
+    clearOkGroupBtn.title = 'Очистить группу';
+    clearOkGroupBtn.textContent = '🗑';
+
+    okGroupInput.insertAdjacentElement('afterend', clearOkGroupBtn);
+    okGroupInput.parentElement?.classList.add('input-with-clear');
+
+    clearOkGroupBtn.addEventListener('click', () => {
+      okGroupInput.value = '';
+      localStorage.removeItem(OK_GROUP_STORAGE_KEY);
+      okGroupInput.focus();
+    });
+  }
 
   const okStatusBadge = document.getElementById('okStatusBadge');
   const statusBox = document.getElementById('statusBox');

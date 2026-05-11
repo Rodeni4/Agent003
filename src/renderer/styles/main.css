@@ -369,3 +369,28 @@ input[type="file"] {
     width: 100%;
   }
 }
+
+.input-with-clear {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.input-with-clear input {
+  flex: 1;
+}
+
+.clear-input-btn {
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border-radius: 12px;
+  background: #fee2e2;
+  color: #b91c1c;
+  box-shadow: none;
+}
+
+.clear-input-btn:hover {
+  background: #fecaca;
+  box-shadow: none;
+}
