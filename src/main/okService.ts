@@ -106,10 +106,11 @@ export async function openOkLogin(): Promise<OkSessionResult> {
     timeout: 30000,
   });
 
-  return {
-    success: true,
-    message: 'OK открыт.',
-  };
+  await page.waitForEvent('close', {
+    timeout: 0,
+  });
+
+  return await checkOkSession();
 }
 
 export async function checkOkSession(): Promise<OkSessionResult> {

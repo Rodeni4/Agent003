@@ -124,14 +124,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   openOkBtn?.addEventListener('click', async () => {
     try {
-      showStatus('Открываем OK...');
+      showStatus('Открываем OK. После входа закройте окно браузера...');
 
       const result = await window.okAPI?.openLogin();
 
       if (result?.success) {
-        hideStatus();
+        setOkConnected(result);
       } else {
-        setOkDisconnected(result?.message || 'Не удалось открыть OK.');
+        setOkDisconnected(result?.message || 'OK не подключён.');
       }
     } catch (error) {
       setOkDisconnected(error instanceof Error ? error.message : 'Ошибка открытия OK.');
