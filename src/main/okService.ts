@@ -70,47 +70,65 @@ async function getOkSessionInfo(context: BrowserContext): Promise<OkSessionResul
       };
     }
 
-    const profileLink = await page
-      .locator('a[href*="/profile/"], a[href*="/dk?st.cmd=userMain"]')
-      .first()
-      .getAttribute('href')
-      .catch(() => null);
+    const profileData = await page.evaluate(() => {
+      const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('a[href]'));
 
-    const profileName = await page
-      .locator('a[href*="/profile/"], a[href*="/dk?st.cmd=userMain"]')
-      .first()
-      .innerText({ timeout: 3000 })
-      .catch(() => '');
+      const profileLink = links.find((link) => {
+        return /\/profile\/\d+/.test(link.href);
+      });
 
-    const normalizedProfileUrl = profileLink
-      ? new URL(profileLink, 'https://ok.ru').toString()
-      : undefined;
+      if (!profileLink) {
+        return {
+          profileName: undefined,
+          profileUrl: undefined,
+        };
+      }
+
+      const idMatch = profileLink.href.match(/\/profile\/(\d+)/);
+      const profileId = idMatch?.[1];
+
+      return {
+        profileName: profileLink.textContent?.trim() || undefined,
+        profileUrl: profileId ? `https://ok.ru/profile/${profileId}` : profileLink.href,
+      };
+    });
 
     return {
       success: true,
       message: 'OK подключён.',
-      profileName: profileName.trim() || undefined,
-      profileUrl: normalizedProfileUrl,
+      profileName: profileData.profileName || undefined,
+      profileUrl: profileData.profileUrl || undefined,
     };
   } finally {
     await page.close().catch(() => undefined);
   }
 }
 
-export async function openOkLogin(): Promise<OkSessionResult> {
+export async function openOkLogin(url?: string): Promise<OkSessionResult> {
   const context = await getVisibleOkContext();
   const page = await context.newPage();
+
+  if (url && url.includes('/group/')) {
+    await page.goto(url, {
+      waitUntil: 'domcontentloaded',
+      timeout: 30000,
+    });
+
+    return {
+      success: true,
+      message: 'Группа OK открыта.',
+    };
+  }
 
   await page.goto('https://ok.ru/', {
     waitUntil: 'domcontentloaded',
     timeout: 30000,
   });
 
-  await page.waitForEvent('close', {
-    timeout: 0,
-  });
-
-  return await checkOkSession();
+  return {
+    success: true,
+    message: 'OK открыт.',
+  };
 }
 
 export async function checkOkSession(): Promise<OkSessionResult> {

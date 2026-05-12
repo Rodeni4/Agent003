@@ -16,64 +16,75 @@
       </label>
     </section>
 
-    <section class="card">
-      <div class="card-header">
-        <span id="okStatusBadge" class="badge disconnected">Проверяем OK...</span>
-      </div>
+    <nav class="tabs">
+      <button id="authTabBtn" class="tab-btn active" type="button">Авторизация</button>
+      <button id="publishTabBtn" class="tab-btn" type="button">Публикация</button>
+    </nav>
 
-      <div id="okProfileBox" class="profile-box hidden">
-        <div>
-          <div id="okProfileName" class="profile-name"></div>
-          <a id="okProfileLink" href="#" target="_blank">Открыть профиль</a>
+    <div id="authTabView" class="tab-view active">
+      <section class="card">
+        <div class="card-header">
+          <span id="okStatusBadge" class="badge disconnected">Проверяем OK...</span>
         </div>
 
-        <button id="resetOkBtn" class="icon-btn" title="Сменить аккаунт OK">🗑</button>
-      </div>
+        <div id="okProfileBox" class="profile-box hidden">
+          <div>
+            <div id="okProfileName" class="profile-name"></div>
+          </div>
 
-      <div class="actions">
-        <button id="openOkBtn">Подключение OK</button>
-      </div>
-
-      <div id="statusBox" class="status hidden"></div>
-    </section>
-
-    <section class="card">
-      <h2>Публикация</h2>
-
-      <div class="platform-target-card">
-        <div class="platform-target-title">Одноклассники</div>
-
-        <div class="target-box">
-          <label class="checkbox-label">
-            <input id="publishToWall" type="checkbox" checked />
-            На стену OK
-          </label>
-
-          <label class="checkbox-label">
-            <input id="publishToGroup" type="checkbox" />
-            В группу OK
-          </label>
+          <div class="profile-actions">
+            <button id="okProfileLink" class="clear-input-btn open-group-btn" title="Открыть профиль OK"
+              type="button">↗</button>
+            <button id="resetOkBtn" class="icon-btn" title="Сменить аккаунт OK">🗑</button>
+          </div>
         </div>
-      </div>
 
-      <div id="okGroupField" class="field hidden">
-        <label for="okGroupInput">Группа OK</label>
-        <input id="okGroupInput" type="text"
-          placeholder="ID группы или ссылка, например https://ok.ru/group/53735043432516" />
-      </div>
+        <div class="actions">
+          <button id="openOkBtn">Подключение OK</button>
+        </div>
 
-      <div class="field">
-        <label for="postText">Текст поста</label>
-        <textarea id="postText" placeholder="Введите текст поста"></textarea>
-      </div>
+      </section>
+    </div>
 
-      <div class="field">
-        <label for="postImage">Картинка</label>
-        <input id="postImage" type="file" accept="image/*" multiple />
-      </div>
+    <div id="publishTabView" class="tab-view">
+      <section class="card">
 
-      <button id="publishOkBtn" class="publish-btn">Опубликовать в OK</button>
-    </section>
+        <div class="platform-target-card">
+          <div class="platform-target-title">Одноклассники</div>
+
+          <div class="target-box">
+            <label class="checkbox-label">
+              <input id="publishToWall" type="checkbox" checked />
+              На стену OK
+            </label>
+
+            <label class="checkbox-label">
+              <input id="publishToGroup" type="checkbox" />
+              В группу OK
+            </label>
+          </div>
+        </div>
+
+        <div id="okGroupField" class="field hidden">
+          <label for="okGroupInput">Группа OK</label>
+          <input id="okGroupInput" type="text"
+            placeholder="ID группы или ссылка, например https://ok.ru/group/53735043432516" />
+        </div>
+
+        <div class="field">
+          <label for="postText">Текст поста</label>
+          <textarea id="postText" placeholder="Введите текст поста"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="postImage">Картинка</label>
+          <input id="postImage" type="file" accept="image/*" multiple />
+        </div>
+
+        <button id="publishOkBtn" class="publish-btn">Опубликовать в OK</button>
+        <div id="statusBox" class="status hidden"></div>
+      </section>
+    </div>
   </main>
 
   <script src="./okRenderer.js"></script>

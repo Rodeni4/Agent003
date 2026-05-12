@@ -394,3 +394,63 @@ input[type="file"] {
   background: #fecaca;
   box-shadow: none;
 }
+
+.tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 0;
+  margin-bottom: 0;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tab-btn {
+  position: relative;
+  border: 0;
+  border-radius: 14px 14px 0 0;
+  padding: 13px 22px;
+  background: transparent;
+  color: var(--muted);
+  box-shadow: none;
+  font-weight: 900;
+  transform: none;
+}
+
+.tab-btn:hover {
+  background: #eef2ff;
+  color: var(--accent);
+  box-shadow: none;
+  transform: none;
+}
+
+.tab-btn.active {
+  background: #ffffff;
+  color: var(--accent);
+  box-shadow: none;
+}
+
+.tab-btn.active::after {
+  content: "";
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: -1px;
+  height: 3px;
+  border-radius: 999px 999px 0 0;
+  background: var(--accent);
+}
+
+.tab-view {
+  display: none;
+  padding-top: 18px;
+}
+
+.tab-view.active {
+  display: block;
+}
+
+.profile-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}

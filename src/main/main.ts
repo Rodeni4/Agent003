@@ -28,8 +28,8 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
-  ipcMain.handle('ok:open-login', async () => {
-    return openOkLogin();
+  ipcMain.handle('ok:open-login', async (_event, url?: string) => {
+    return openOkLogin(url);
   });
 
   ipcMain.handle('ok:check-session', async () => {

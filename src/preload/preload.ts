@@ -1,7 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
 contextBridge.exposeInMainWorld('okAPI', {
-  openLogin: () => ipcRenderer.invoke('ok:open-login'),
+  openLogin: (url?: string) => ipcRenderer.invoke('ok:open-login', url),
   checkSession: () => ipcRenderer.invoke('ok:check-session'),
   resetSession: () => ipcRenderer.invoke('ok:reset-session'),
   publishTextPost: (payload: {

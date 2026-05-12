@@ -6,7 +6,7 @@ type OkResult = {
 };
 
 type OkAPI = {
-    openLogin: () => Promise<OkResult>;
+    openLogin: (url?: string) => Promise<OkResult>;
     checkSession: () => Promise<OkResult>;
     resetSession: () => Promise<OkResult>;
     publishTextPost: (payload: {
@@ -19,13 +19,13 @@ type OkAPI = {
     }) => Promise<OkResult>;
 };
 
-declare global {
-    interface Window {
-        okAPI?: OkAPI;
-    }
-}
 
-export function initOkRenderer() {
+
+function initOkRenderer() {
+    const appWindow = window as Window & {
+        okAPI?: OkAPI;
+    };
+
     const openOkBtn = document.getElementById('openOkBtn') as HTMLButtonElement | null;
     const resetOkBtn = document.getElementById('resetOkBtn') as HTMLButtonElement | null;
     const publishOkBtn = document.getElementById('publishOkBtn') as HTMLButtonElement | null;
@@ -69,8 +69,39 @@ export function initOkRenderer() {
         clearOkGroupBtn.title = 'Очистить группу';
         clearOkGroupBtn.textContent = '🗑';
 
+        const openOkGroupBtn = document.createElement('button');
+        openOkGroupBtn.type = 'button';
+        openOkGroupBtn.className = 'clear-input-btn open-group-btn';
+        openOkGroupBtn.title = 'Открыть группу OK';
+        openOkGroupBtn.textContent = '↗';
+
         okGroupInput.insertAdjacentElement('afterend', clearOkGroupBtn);
+        clearOkGroupBtn.insertAdjacentElement('beforebegin', openOkGroupBtn);
+
         okGroupInput.parentElement?.classList.add('input-with-clear');
+
+        openOkGroupBtn.addEventListener('click', async () => {
+            const groupValue = okGroupInput.value.trim();
+
+            if (!groupValue) {
+                showStatus('Укажите ID или ссылку группы OK.');
+                return;
+            }
+
+            const groupIdMatch = groupValue.match(/group\/(\d+)/);
+            const groupId = groupIdMatch?.[1] || groupValue.match(/^\d+$/)?.[0];
+
+            if (!groupId) {
+                showStatus('Некорректная группа OK.');
+                return;
+            }
+
+            try {
+                await appWindow.okAPI?.openLogin(`https://ok.ru/group/${groupId}`);
+            } catch (error) {
+                showStatus(getErrorMessage(error, 'Ошибка открытия группы OK.'));
+            }
+        });
 
         clearOkGroupBtn.addEventListener('click', () => {
             okGroupInput.value = '';
@@ -84,7 +115,28 @@ export function initOkRenderer() {
 
     const okProfileBox = document.getElementById('okProfileBox');
     const okProfileName = document.getElementById('okProfileName');
-    const okProfileLink = document.getElementById('okProfileLink') as HTMLAnchorElement | null;
+    const okProfileLink = document.getElementById('okProfileLink') as HTMLButtonElement | null;
+
+    const authTabBtn = document.getElementById('authTabBtn') as HTMLButtonElement | null;
+    const publishTabBtn = document.getElementById('publishTabBtn') as HTMLButtonElement | null;
+    const authTabView = document.getElementById('authTabView');
+    const publishTabView = document.getElementById('publishTabView');
+
+    function setActiveTab(tab: 'auth' | 'publish') {
+        authTabBtn?.classList.toggle('active', tab === 'auth');
+        publishTabBtn?.classList.toggle('active', tab === 'publish');
+
+        authTabView?.classList.toggle('active', tab === 'auth');
+        publishTabView?.classList.toggle('active', tab === 'publish');
+    }
+
+    authTabBtn?.addEventListener('click', () => {
+        setActiveTab('auth');
+    });
+
+    publishTabBtn?.addEventListener('click', () => {
+        setActiveTab('publish');
+    });
 
     function getErrorMessage(error: unknown, fallbackMessage: string) {
         return error instanceof Error ? error.message : fallbackMessage;
@@ -123,7 +175,7 @@ export function initOkRenderer() {
         }
 
         if (okProfileLink) {
-            okProfileLink.href = '#';
+            delete okProfileLink.dataset.profileUrl;
         }
     }
 
@@ -140,7 +192,7 @@ export function initOkRenderer() {
         }
 
         if (okProfileLink && profileUrl) {
-            okProfileLink.href = profileUrl;
+            okProfileLink.dataset.profileUrl = profileUrl;
             okProfileLink.classList.remove('hidden');
         } else {
             okProfileLink?.classList.add('hidden');
@@ -180,7 +232,7 @@ export function initOkRenderer() {
 
     async function checkOkSessionOnStart() {
         try {
-            const result = await window.okAPI?.checkSession();
+            const result = await appWindow.okAPI?.checkSession();
 
             if (result?.success) {
                 setOkConnected(result);
@@ -196,7 +248,7 @@ export function initOkRenderer() {
         try {
             showStatus('Открываем OK. После входа закройте окно браузера...');
 
-            const result = await window.okAPI?.openLogin();
+            const result = await appWindow.okAPI?.openLogin();
 
             if (result?.success) {
                 setOkConnected(result);
@@ -208,11 +260,19 @@ export function initOkRenderer() {
         }
     });
 
+    okProfileLink?.addEventListener('click', async () => {
+        try {
+            await appWindow.okAPI?.openLogin();
+        } catch (error) {
+            showStatus(getErrorMessage(error, 'Ошибка открытия OK.'));
+        }
+    });
+
     resetOkBtn?.addEventListener('click', async () => {
         try {
             showStatus('Сбрасываем сессию OK...');
 
-            const result = await window.okAPI?.resetSession();
+            const result = await appWindow.okAPI?.resetSession();
 
             if (result?.success) {
                 setOkDisconnected('Сессия OK сброшена. Нажмите “Подключение OK” и войдите заново.');
@@ -250,7 +310,7 @@ export function initOkRenderer() {
                 .map((file) => (file as File & { path?: string }).path)
                 .filter((path): path is string => Boolean(path));
 
-            const result = await window.okAPI?.publishTextPost({
+            const result = await appWindow.okAPI?.publishTextPost({
                 text,
                 debug: Boolean(debugMode?.checked),
                 imagePaths,
@@ -271,5 +331,13 @@ export function initOkRenderer() {
         }
     });
 
+
+
     checkOkSessionOnStart();
 }
+
+const okRendererWindow = window as Window & {
+    initOkRenderer?: () => void;
+};
+
+okRendererWindow.initOkRenderer = initOkRenderer;
