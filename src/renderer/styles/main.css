@@ -455,17 +455,6 @@ input[type="file"] {
   align-items: center;
 }
 
-.profile-name-input {
-  flex: 1;
-  min-height: 50px;
-  display: flex;
-  align-items: center;
-  border: 1px dashed #cbd5e1;
-  border-radius: 14px;
-  padding: 14px;
-  background: var(--field);
-}
-
 .auth-row {
   display: grid;
   grid-template-columns: 88px 1fr auto auto;

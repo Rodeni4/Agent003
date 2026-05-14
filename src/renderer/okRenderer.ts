@@ -142,16 +142,8 @@ function initOkRenderer() {
         return error instanceof Error ? error.message : fallbackMessage;
     }
 
-    function updateGroupFieldVisibility() {
-        if (publishToGroup?.checked) {
-            okGroupField?.classList.remove('hidden');
-        } else {
-            okGroupField?.classList.add('hidden');
-        }
-    }
 
-    publishToGroup?.addEventListener('change', updateGroupFieldVisibility);
-    updateGroupFieldVisibility();
+
 
     function showStatus(message: string) {
         if (!statusBox) return;
@@ -200,6 +192,13 @@ function initOkRenderer() {
     }
 
     function setOkConnected(result?: OkResult) {
+
+        okGroupField?.classList.remove('hidden');
+
+        if (okGroupInput) {
+            okGroupInput.value = localStorage.getItem(OK_GROUP_STORAGE_KEY) || '';
+        }
+
         if (okStatusBadge) {
             okStatusBadge.textContent = 'OK подключён';
             okStatusBadge.className = 'badge connected';
@@ -214,6 +213,7 @@ function initOkRenderer() {
 
     function setOkDisconnected(message?: string) {
         if (okStatusBadge) {
+            okGroupField?.classList.add('hidden');
             okStatusBadge.textContent = 'OK не подключён';
             okStatusBadge.className = 'badge disconnected';
         }
