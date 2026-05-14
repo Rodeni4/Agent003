@@ -27,20 +27,38 @@
           <span id="okStatusBadge" class="badge disconnected">Проверяем OK...</span>
         </div>
 
-        <div id="okProfileBox" class="profile-box hidden">
-          <div>
-            <div id="okProfileName" class="profile-name"></div>
-          </div>
+        <div id="okProfileBox" class="auth-row hidden">
+          <label>Аккаунт</label>
 
-          <div class="profile-actions">
-            <button id="okProfileLink" class="clear-input-btn open-group-btn" title="Открыть профиль OK"
-              type="button">↗</button>
-            <button id="resetOkBtn" class="icon-btn" title="Сменить аккаунт OK">🗑</button>
-          </div>
+          <div id="okProfileName" class="profile-name-input"></div>
+
+          <button
+            id="okProfileLink"
+            class="clear-input-btn open-group-btn"
+            title="Открыть профиль OK"
+            type="button"
+          >↗</button>
+
+          <button
+            id="resetOkBtn"
+            class="icon-btn"
+            title="Сменить аккаунт OK"
+            type="button"
+          >🗑</button>
+        </div>
+
+        <div id="okGroupField" class="auth-row hidden">
+          <label for="okGroupInput">ID группы</label>
+
+          <input
+            id="okGroupInput"
+            type="text"
+            placeholder="ID группы или ссылка, например https://ok.ru/group/53735043432516"
+          />
         </div>
 
         <div class="actions">
-          <button id="openOkBtn">Подключение OK</button>
+          <button id="openOkBtn" type="button">Подключение OK</button>
         </div>
 
       </section>
@@ -65,12 +83,6 @@
           </div>
         </div>
 
-        <div id="okGroupField" class="field hidden">
-          <label for="okGroupInput">Группа OK</label>
-          <input id="okGroupInput" type="text"
-            placeholder="ID группы или ссылка, например https://ok.ru/group/53735043432516" />
-        </div>
-
         <div class="field">
           <label for="postText">Текст поста</label>
           <textarea id="postText" placeholder="Введите текст поста"></textarea>
@@ -81,7 +93,10 @@
           <input id="postImage" type="file" accept="image/*" multiple />
         </div>
 
-        <button id="publishOkBtn" class="publish-btn">Опубликовать в OK</button>
+        <button id="publishOkBtn" class="publish-btn" type="button">
+          Опубликовать в OK
+        </button>
+
         <div id="statusBox" class="status hidden"></div>
       </section>
     </div>

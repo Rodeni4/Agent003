@@ -454,3 +454,43 @@ input[type="file"] {
   gap: 10px;
   align-items: center;
 }
+
+.profile-name-input {
+  flex: 1;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  border: 1px dashed #cbd5e1;
+  border-radius: 14px;
+  padding: 14px;
+  background: var(--field);
+}
+
+.auth-row {
+  display: grid;
+  grid-template-columns: 88px 1fr auto auto;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.auth-row label {
+  margin-bottom: 0;
+}
+
+.auth-row .profile-name-input,
+.auth-row input[type="text"] {
+  width: 100%;
+}
+
+.profile-name-input {
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  border: 1px dashed #cbd5e1;
+  border-radius: 14px;
+  padding: 14px;
+  background: var(--field);
+  font-weight: 900;
+  color: #1e293b;
+}

@@ -188,7 +188,7 @@ function initOkRenderer() {
         okProfileBox?.classList.remove('hidden');
 
         if (okProfileName) {
-            okProfileName.textContent = profileName ? `Аккаунт: ${profileName}` : 'Аккаунт OK';
+            okProfileName.textContent = profileName ? `${profileName}` : 'Аккаунт OK';
         }
 
         if (okProfileLink && profileUrl) {
