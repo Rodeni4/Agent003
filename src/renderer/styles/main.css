@@ -495,3 +495,70 @@ input[type="file"] {
 .platform-targets-row .platform-target-card {
   margin-bottom: 0;
 }
+
+.card {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-progress {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 4px;
+  width: 0;
+  background: linear-gradient(90deg, #6366f1, #4f46e5);
+  border-radius: 0 999px 999px 0;
+  opacity: 0;
+  transition:
+    width 0.25s ease,
+    opacity 0.2s ease;
+  z-index: 2;
+}
+
+.card.loading .card-progress {
+  opacity: 1;
+}
+
+.field-progress {
+  height: 3px;
+  width: 0;
+  margin-top: 8px;
+  background: linear-gradient(90deg, #6366f1, #4f46e5);
+  border-radius: 999px;
+  opacity: 0;
+  transition:
+    width 0.25s ease,
+    opacity 0.2s ease;
+}
+
+.field-progress.active {
+  opacity: 1;
+}
+
+.auth-row.loading-border .profile-name-input {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--field), var(--field)) padding-box,
+    conic-gradient(
+      from var(--border-angle),
+      transparent 0deg,
+      transparent 250deg,
+      #6366f1 300deg,
+      #4f46e5 360deg
+    ) border-box;
+  animation: group-border-spin 1s linear infinite;
+}
+
+.auth-row.loading-border .profile-name-input {
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--field), var(--field)) padding-box,
+    conic-gradient(
+      from -90deg,
+      #6366f1 0deg,
+      #4f46e5 var(--group-progress-deg, 12deg),
+      transparent var(--group-progress-deg, 12deg),
+      transparent 360deg
+    ) border-box;
+}

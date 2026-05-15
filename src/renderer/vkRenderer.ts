@@ -20,6 +20,44 @@ function initVkRenderer() {
     const openVkBtn = document.getElementById('openVkBtn') as HTMLButtonElement | null;
     const resetVkBtn = document.getElementById('resetVkBtn') as HTMLButtonElement | null;
     const vkStatusBadge = document.getElementById('vkStatusBadge');
+    const vkCard = vkStatusBadge?.closest('.card') as HTMLElement | null;
+
+    const vkProgressBar = document.createElement('div');
+    vkProgressBar.className = 'card-progress';
+
+    if (vkCard) {
+        vkCard.appendChild(vkProgressBar);
+    }
+
+    let vkProgressTimer: number | undefined;
+    let vkProgressValue = 0;
+
+    function startVkProgress() {
+        window.clearInterval(vkProgressTimer);
+
+        vkProgressValue = 3;
+        vkProgressBar.style.width = `${vkProgressValue}%`;
+        vkCard?.classList.add('loading');
+
+        vkProgressTimer = window.setInterval(() => {
+            if (vkProgressValue < 92) {
+                vkProgressValue += Math.max(1, (92 - vkProgressValue) * 0.08);
+                vkProgressBar.style.width = `${vkProgressValue}%`;
+            }
+        }, 180);
+    }
+
+    function finishVkProgress() {
+        window.clearInterval(vkProgressTimer);
+
+        vkProgressBar.style.width = '100%';
+
+        window.setTimeout(() => {
+            vkCard?.classList.remove('loading');
+            vkProgressBar.style.width = '0';
+            vkProgressValue = 0;
+        }, 350);
+    }
 
     const vkProfileBox = document.getElementById('vkProfileBox');
     const vkProfileName = document.getElementById('vkProfileName');
@@ -31,6 +69,49 @@ function initVkRenderer() {
 
     const vkGroupInput = document.getElementById('vkGroupInput') as HTMLInputElement | null;
     const VK_GROUP_STORAGE_KEY = 'agent003.vkGroupValue';
+
+    const vkGroupProgressBar = document.createElement('div');
+    vkGroupProgressBar.className = 'field-progress';
+    vkGroupNameRow?.insertAdjacentElement('afterend', vkGroupProgressBar);
+
+    let vkGroupProgressTimer: number | undefined;
+    let vkGroupProgressValue = 0;
+
+    function startVkGroupProgress() {
+        window.clearInterval(vkGroupProgressTimer);
+
+        vkGroupProgressValue = 3;
+        vkGroupNameRow?.classList.add('loading-border');
+
+        const nameBox = vkGroupNameRow?.querySelector('.profile-name-input') as HTMLElement | null;
+        nameBox?.style.setProperty('--group-progress-deg', `${vkGroupProgressValue * 3.6}deg`);
+
+        vkGroupProgressTimer = window.setInterval(() => {
+            if (vkGroupProgressValue < 92) {
+                vkGroupProgressValue += Math.max(1, (92 - vkGroupProgressValue) * 0.08);
+
+                nameBox?.style.setProperty(
+                    '--group-progress-deg',
+                    `${vkGroupProgressValue * 3.6}deg`
+                );
+            }
+        }, 180);
+    }
+
+    function finishVkGroupProgress() {
+        window.clearInterval(vkGroupProgressTimer);
+
+        const nameBox = vkGroupNameRow?.querySelector('.profile-name-input') as HTMLElement | null;
+        nameBox?.style.setProperty('--group-progress-deg', '360deg');
+
+        window.setTimeout(() => {
+            vkGroupNameRow?.classList.remove('loading-border');
+            nameBox?.style.removeProperty('--group-progress-deg');
+            vkGroupProgressValue = 0;
+        }, 350);
+    }
+
+
 
     if (vkGroupInput) {
         vkGroupInput.value = localStorage.getItem(VK_GROUP_STORAGE_KEY) || '';
@@ -86,6 +167,7 @@ function initVkRenderer() {
             vkGroupInput.value = '';
             localStorage.removeItem(VK_GROUP_STORAGE_KEY);
             vkGroupNameRow?.classList.add('hidden');
+            finishVkGroupProgress();
 
             if (vkGroupName) {
                 vkGroupName.textContent = 'не проверена';
@@ -100,10 +182,12 @@ function initVkRenderer() {
 
         if (!groupValue) {
             vkGroupNameRow?.classList.add('hidden');
+            finishVkGroupProgress();
             return;
         }
 
         vkGroupNameRow?.classList.remove('hidden');
+        startVkGroupProgress();
 
         if (vkGroupName) {
             vkGroupName.textContent = 'проверяем...';
@@ -121,6 +205,8 @@ function initVkRenderer() {
             if (vkGroupName) {
                 vkGroupName.textContent = 'не проверена';
             }
+        } finally {
+            finishVkGroupProgress();
         }
     }
 
@@ -149,7 +235,18 @@ function initVkRenderer() {
         vkProfileLink?.classList.remove('hidden');
     }
 
+    function setVkChecking(text = 'Проверяем VK...') {
+        startVkProgress();
+
+        if (vkStatusBadge) {
+            vkStatusBadge.textContent = text;
+            vkStatusBadge.className = 'badge pending';
+        }
+    }
+
     function setVkConnected(result?: VkResult) {
+        finishVkProgress();
+
         if (vkStatusBadge) {
             vkStatusBadge.textContent = 'VK подключён';
             vkStatusBadge.className = 'badge connected';
@@ -163,6 +260,8 @@ function initVkRenderer() {
     }
 
     function setVkDisconnected(message?: string) {
+        finishVkProgress();
+
         if (vkStatusBadge) {
             vkStatusBadge.textContent = message || 'VK не подключён';
             vkStatusBadge.className = 'badge disconnected';
@@ -176,10 +275,7 @@ function initVkRenderer() {
 
     async function checkVkSessionOnStart() {
         try {
-            if (vkStatusBadge) {
-                vkStatusBadge.textContent = 'Проверяем VK...';
-                vkStatusBadge.className = 'badge pending';
-            }
+            setVkChecking();
 
             const result = await appWindow.vkAPI?.checkSession();
 
@@ -195,16 +291,14 @@ function initVkRenderer() {
 
     openVkBtn?.addEventListener('click', async () => {
         try {
-            if (vkStatusBadge) {
-                vkStatusBadge.textContent = 'Открываем VK...';
-                vkStatusBadge.className = 'badge pending';
-            }
+            setVkChecking('Открываем VK...');
 
-            await appWindow.vkAPI?.openLogin();
+            const result = await appWindow.vkAPI?.openLogin();
 
-            if (vkStatusBadge) {
-                vkStatusBadge.textContent = 'VK открыт. После входа закройте окно и перезапустите приложение.';
-                vkStatusBadge.className = 'badge connected';
+            if (result?.success) {
+                setVkConnected(result);
+            } else {
+                setVkDisconnected(result?.message || 'VK не подключён.');
             }
         } catch {
             setVkDisconnected('Ошибка открытия VK.');
@@ -213,6 +307,8 @@ function initVkRenderer() {
 
     resetVkBtn?.addEventListener('click', async () => {
         try {
+            setVkChecking('Сбрасываем VK...');
+
             const result = await appWindow.vkAPI?.resetSession();
 
             if (result?.success) {
@@ -227,7 +323,15 @@ function initVkRenderer() {
 
     vkProfileLink?.addEventListener('click', async () => {
         try {
-            await appWindow.vkAPI?.openLogin();
+            setVkChecking('Открываем VK...');
+
+            const result = await appWindow.vkAPI?.openLogin();
+
+            if (result?.success) {
+                setVkConnected(result);
+            } else {
+                finishVkProgress();
+            }
         } catch {
             setVkDisconnected('Ошибка открытия VK.');
         }
