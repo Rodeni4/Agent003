@@ -15,6 +15,7 @@ import {
   closeVkContext,
   openVkLogin,
   resetVkSession,
+  getVkGroupInfo,
 } from './vkService';
 
 import { publishOkTextPost } from './postingService';
@@ -52,8 +53,8 @@ app.whenReady().then(() => {
     return getOkGroupInfo(groupValue);
   });
 
-  ipcMain.handle('vk:open-login', async () => {
-    return openVkLogin();
+  ipcMain.handle('vk:open-login', async (_event, url?: string) => {
+    return openVkLogin(url);
   });
 
   ipcMain.handle('vk:check-session', async () => {
@@ -62,6 +63,10 @@ app.whenReady().then(() => {
 
   ipcMain.handle('vk:reset-session', async () => {
     return resetVkSession();
+  });
+
+  ipcMain.handle('vk:get-group-info', async (_event, groupValue: string) => {
+    return getVkGroupInfo(groupValue);
   });
 
   ipcMain.handle(

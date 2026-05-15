@@ -13,6 +13,12 @@ type VkProfileInfo = {
   profileName?: string;
 };
 
+export type VkGroupResult = {
+  success: boolean;
+  message: string;
+  groupName?: string;
+};
+
 let vkContext: BrowserContext | null = null;
 
 export function getVkProfilePath() {
@@ -125,11 +131,14 @@ async function getVkSessionInfo(context: BrowserContext): Promise<VkSessionResul
   }
 }
 
-export async function openVkLogin(): Promise<VkSessionResult> {
+export async function openVkLogin(url?: string): Promise<VkSessionResult> {
   const context = await getVisibleVkContext();
   const page = await context.newPage();
 
-  await openVkFeed(page);
+  await page.goto(url || 'https://vk.com/feed', {
+    waitUntil: 'domcontentloaded',
+    timeout: 30000,
+  });
 
   return {
     success: true,
@@ -187,5 +196,58 @@ export async function closeVkContext() {
   if (vkContext) {
     await vkContext.close().catch(() => undefined);
     vkContext = null;
+  }
+}
+
+export async function getVkGroupInfo(groupValue: string): Promise<VkGroupResult> {
+  const cleanValue = groupValue
+    .trim()
+    .replace('https://vk.com/', '')
+    .replace('http://vk.com/', '')
+    .replace('vk.com/', '');
+
+  if (!cleanValue) {
+    return {
+      success: false,
+      message: 'Укажите ссылку или ID группы VK.',
+    };
+  }
+
+  let context: BrowserContext | null = null;
+
+  try {
+    context = await createVkContext(true);
+    const page = await context.newPage();
+
+    await page.goto(`https://vk.com/${cleanValue}`, {
+      waitUntil: 'domcontentloaded',
+      timeout: 30000,
+    });
+
+    const groupNameElement = page.locator('[data-testid="group-name"]').first();
+
+    await groupNameElement.waitFor({
+      state: 'visible',
+      timeout: 30000,
+    });
+
+    const groupName = await groupNameElement.innerText({
+      timeout: 5000,
+    });
+
+    return {
+      success: true,
+      message: 'Группа VK найдена.',
+      groupName: groupName.trim(),
+    };
+  } catch {
+    return {
+      success: false,
+      message: 'Не удалось получить название группы VK.',
+    };
+  } finally {
+    if (context) {
+      await context.close().catch(() => undefined);
+    }
   }
 }

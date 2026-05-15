@@ -21,7 +21,8 @@ contextBridge.exposeInMainWorld('okAPI', {
 });
 
 contextBridge.exposeInMainWorld('vkAPI', {
-  openLogin: () => ipcRenderer.invoke('vk:open-login'),
+  openLogin: (url?: string) => ipcRenderer.invoke('vk:open-login', url),
   checkSession: () => ipcRenderer.invoke('vk:check-session'),
   resetSession: () => ipcRenderer.invoke('vk:reset-session'),
+  getGroupInfo: (groupValue: string) => ipcRenderer.invoke('vk:get-group-info', groupValue),
 });
