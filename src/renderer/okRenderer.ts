@@ -5,7 +5,16 @@ type OkResult = {
     profileUrl?: string;
 };
 
+type OkGroupResult = {
+    success: boolean;
+    message: string;
+    groupId?: string;
+    groupName?: string;
+    groupUrl?: string;
+};
+
 type OkAPI = {
+    getGroupInfo: (groupValue: string) => Promise<OkGroupResult>;
     openLogin: (url?: string) => Promise<OkResult>;
     checkSession: () => Promise<OkResult>;
     resetSession: () => Promise<OkResult>;
@@ -53,6 +62,8 @@ function initOkRenderer() {
     const publishToGroup = document.getElementById('publishToGroup') as HTMLInputElement | null;
     const okGroupField = document.getElementById('okGroupField');
     const okGroupInput = document.getElementById('okGroupInput') as HTMLInputElement | null;
+    const okGroupNameRow = document.getElementById('okGroupNameRow');
+    const okGroupName = document.getElementById('okGroupName');
 
     const OK_GROUP_STORAGE_KEY = 'agent003.okGroupValue';
 
@@ -61,6 +72,20 @@ function initOkRenderer() {
 
         okGroupInput.addEventListener('input', () => {
             localStorage.setItem(OK_GROUP_STORAGE_KEY, okGroupInput.value);
+
+            if (okGroupInput.value.trim()) {
+                okGroupNameRow?.classList.remove('hidden');
+
+                if (okGroupName) {
+                    okGroupName.textContent = 'не проверена';
+                }
+            } else {
+                okGroupNameRow?.classList.add('hidden');
+
+                if (okGroupName) {
+                    okGroupName.textContent = 'не проверена';
+                }
+            }
         });
 
         const clearOkGroupBtn = document.createElement('button');
@@ -102,7 +127,6 @@ function initOkRenderer() {
                 showStatus(getErrorMessage(error, 'Ошибка открытия группы OK.'));
             }
         });
-
         clearOkGroupBtn.addEventListener('click', () => {
             okGroupInput.value = '';
             localStorage.removeItem(OK_GROUP_STORAGE_KEY);
@@ -171,6 +195,46 @@ function initOkRenderer() {
         }
     }
 
+    async function loadOkGroupName() {
+        const groupValue = okGroupInput?.value.trim();
+
+        if (!groupValue) {
+            okGroupNameRow?.classList.add('hidden');
+
+            if (okGroupName) {
+                okGroupName.textContent = 'не проверена';
+            }
+
+            return;
+        }
+
+        okGroupNameRow?.classList.remove('hidden');
+
+        if (okGroupName) {
+            okGroupName.textContent = 'проверяем...';
+        }
+
+        try {
+            const result = await appWindow.okAPI?.getGroupInfo(groupValue);
+
+            if (result?.success) {
+                if (okGroupName) {
+                    okGroupName.textContent = result.groupName || 'Группа OK';
+                }
+
+                return;
+            }
+
+            if (okGroupName) {
+                okGroupName.textContent = 'не удалось проверить';
+            }
+        } catch {
+            if (okGroupName) {
+                okGroupName.textContent = 'не удалось проверить';
+            }
+        }
+    }
+
     function showProfile(profileName?: string, profileUrl?: string) {
         if (!profileName && !profileUrl) {
             hideProfile();
@@ -192,12 +256,13 @@ function initOkRenderer() {
     }
 
     function setOkConnected(result?: OkResult) {
-
-        okGroupField?.classList.remove('hidden');
-
         if (okGroupInput) {
             okGroupInput.value = localStorage.getItem(OK_GROUP_STORAGE_KEY) || '';
         }
+
+        okGroupField?.classList.remove('hidden');
+        okGroupNameRow?.classList.toggle('hidden', !okGroupInput?.value.trim());
+        void loadOkGroupName();
 
         if (okStatusBadge) {
             okStatusBadge.textContent = 'OK подключён';
@@ -212,8 +277,10 @@ function initOkRenderer() {
     }
 
     function setOkDisconnected(message?: string) {
+        okGroupField?.classList.add('hidden');
+        okGroupNameRow?.classList.add('hidden');
+
         if (okStatusBadge) {
-            okGroupField?.classList.add('hidden');
             okStatusBadge.textContent = 'OK не подключён';
             okStatusBadge.className = 'badge disconnected';
         }

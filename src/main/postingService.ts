@@ -74,9 +74,40 @@ async function fillPostForm(page: Page, text: string, imagePaths?: string[]) {
     .locator('#mtLayer button.posting_submit.js-publish-btn, #mtLayer button[data-action="submit"]')
     .first();
 
+  await sendButton.waitFor({
+    state: 'visible',
+    timeout: 30000,
+  });
+
+  await sendButton.scrollIntoViewIfNeeded({
+    timeout: 30000,
+  });
+
+  await page.waitForFunction(() => {
+    const button = document.querySelector<HTMLButtonElement>(
+      '#mtLayer button.posting_submit.js-publish-btn, #mtLayer button[data-action="submit"]'
+    );
+
+    if (!button) {
+      return false;
+    }
+
+    const rect = button.getBoundingClientRect();
+
+    return (
+      !button.disabled &&
+      button.getAttribute('aria-disabled') !== 'true' &&
+      !button.classList.contains('disabled') &&
+      !button.classList.contains('__disabled') &&
+      rect.width > 0 &&
+      rect.height > 0
+    );
+  }, undefined, {
+    timeout: 30000,
+  });
+
   await sendButton.click({
-    timeout: 10000,
-    force: true,
+    timeout: 30000,
   });
 
   await page.waitForTimeout(4000);

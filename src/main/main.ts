@@ -4,6 +4,7 @@ import * as path from 'path';
 import {
   checkOkSession,
   closeOkContext,
+  getOkGroupInfo,
   getOkProfilePath,
   openOkLogin,
   resetOkSession,
@@ -38,6 +39,10 @@ app.whenReady().then(() => {
 
   ipcMain.handle('ok:reset-session', async () => {
     return resetOkSession();
+  });
+
+  ipcMain.handle('ok:get-group-info', async (_event, groupValue: string) => {
+    return getOkGroupInfo(groupValue);
   });
 
   ipcMain.handle(

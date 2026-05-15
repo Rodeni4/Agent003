@@ -10,10 +10,32 @@ export type OkSessionResult = {
   profileUrl?: string;
 };
 
+export type OkGroupResult = {
+  success: boolean;
+  message: string;
+  groupId?: string;
+  groupName?: string;
+  groupUrl?: string;
+};
+
 let okContext: BrowserContext | null = null;
 
 export function getOkProfilePath() {
   return path.join(app.getPath('userData'), 'ok-profile');
+}
+
+function extractOkGroupId(groupValue?: string) {
+  if (!groupValue) return null;
+
+  const value = groupValue.trim();
+
+  const fromUrl = value.match(/group\/(\d+)/);
+  if (fromUrl?.[1]) return fromUrl[1];
+
+  const fromDigits = value.match(/^\d+$/);
+  if (fromDigits) return value;
+
+  return null;
 }
 
 async function createOkContext(headless: boolean) {
@@ -174,6 +196,69 @@ export async function resetOkSession(): Promise<OkSessionResult> {
       success: false,
       message: 'Не удалось сбросить сессию OK.',
     };
+  }
+}
+
+export async function getOkGroupInfo(groupValue: string): Promise<OkGroupResult> {
+  const groupId = extractOkGroupId(groupValue);
+
+  if (!groupId) {
+    return {
+      success: false,
+      message: 'Некорректный ID группы OK.',
+    };
+  }
+
+  let context: BrowserContext | null = null;
+
+  try {
+    context = await createOkContext(true);
+    const page = await context.newPage();
+
+    await page.goto(`https://ok.ru/group/${groupId}`, {
+      waitUntil: 'domcontentloaded',
+      timeout: 30000,
+    });
+
+    await page.waitForTimeout(3000);
+
+    const groupName = await page.evaluate(() => {
+      const ogTitle = document
+        .querySelector<HTMLMetaElement>('meta[property="og:title"]')
+        ?.content
+        ?.trim();
+
+      if (ogTitle) return ogTitle;
+
+      const h1 = document.querySelector('h1')?.textContent?.trim();
+      if (h1) return h1;
+
+      const title = document.title?.trim();
+      if (title) return title.replace(/\s*\|.*$/, '').trim();
+
+      return undefined;
+    });
+
+    await page.close().catch(() => undefined);
+
+    return {
+      success: true,
+      message: 'Группа OK найдена.',
+      groupId,
+      groupName: groupName || `Группа ${groupId}`,
+      groupUrl: `https://ok.ru/group/${groupId}`,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error instanceof Error
+        ? `Не удалось получить группу OK: ${error.message}`
+        : 'Не удалось получить группу OK.',
+    };
+  } finally {
+    if (context) {
+      await context.close().catch(() => undefined);
+    }
   }
 }
 
