@@ -10,6 +10,13 @@ import {
   resetOkSession,
 } from './okService';
 
+import {
+  checkVkSession,
+  closeVkContext,
+  openVkLogin,
+  resetVkSession,
+} from './vkService';
+
 import { publishOkTextPost } from './postingService';
 
 let mainWindow: BrowserWindow | null = null;
@@ -45,6 +52,18 @@ app.whenReady().then(() => {
     return getOkGroupInfo(groupValue);
   });
 
+  ipcMain.handle('vk:open-login', async () => {
+    return openVkLogin();
+  });
+
+  ipcMain.handle('vk:check-session', async () => {
+    return checkVkSession();
+  });
+
+  ipcMain.handle('vk:reset-session', async () => {
+    return resetVkSession();
+  });
+
   ipcMain.handle(
     'ok:publish-text-post',
     async (
@@ -75,6 +94,7 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', async () => {
   await closeOkContext();
+  await closeVkContext();
 
   if (process.platform !== 'darwin') {
     app.quit();

@@ -54,10 +54,10 @@
 
       <section class="card">
         <div class="card-header">
-          <span id="vkStatusBadge" class="badge disconnected">VK не подключён</span>
+          <span id="vkStatusBadge" class="badge disconnected">Проверяем VK...</span>
         </div>
 
-        <div id="vkProfileBox" class="auth-row">
+        <div id="vkProfileBox" class="auth-row hidden">
           <label>Аккаунт</label>
           <div id="vkProfileName" class="profile-name-input">не подключён</div>
 
@@ -66,13 +66,13 @@
           <button id="resetVkBtn" class="icon-btn" title="Сменить аккаунт VK" type="button">🗑</button>
         </div>
 
-        <div id="vkGroupField" class="auth-row">
+        <div id="vkGroupField" class="auth-row hidden">
           <label for="vkGroupInput">ID группы</label>
           <input id="vkGroupInput" type="text"
             placeholder="ID группы или ссылка, например https://vk.com/club123456789" />
         </div>
 
-        <div id="vkGroupNameRow" class="auth-row">
+        <div id="vkGroupNameRow" class="auth-row hidden">
           <label>Группа</label>
           <div id="vkGroupName" class="profile-name-input">не проверена</div>
         </div>
@@ -139,6 +139,7 @@
   </main>
 
   <script src="./okRenderer.js"></script>
+  <script src="./vkRenderer.js"></script>
   <script src="./renderer.js"></script>
 </body>
 
