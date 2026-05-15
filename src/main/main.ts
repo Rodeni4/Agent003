@@ -1,4 +1,5 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
+import { publishVkTextPost } from './vkPostingService';
 import * as path from 'path';
 
 import {
@@ -16,6 +17,7 @@ import {
   openVkLogin,
   resetVkSession,
   getVkGroupInfo,
+  getVkProfilePath,
 } from './vkService';
 
 import { publishOkTextPost } from './postingService';
@@ -90,6 +92,31 @@ app.whenReady().then(() => {
         publishToGroup: payload.publishToGroup,
         groupValue: payload.groupValue,
         okProfilePath: getOkProfilePath(),
+      });
+    }
+  );
+
+  ipcMain.handle(
+    'vk:publish-text-post',
+    async (
+      _event,
+      payload: {
+        text: string;
+        debug: boolean;
+        imagePaths?: string[];
+        publishToWall: boolean;
+        publishToGroup: boolean;
+        groupValue?: string;
+      }
+    ) => {
+      return publishVkTextPost({
+        text: payload.text,
+        debug: payload.debug,
+        imagePaths: payload.imagePaths,
+        publishToWall: payload.publishToWall,
+        publishToGroup: payload.publishToGroup,
+        groupValue: payload.groupValue,
+        vkProfilePath: getVkProfilePath(),
       });
     }
   );

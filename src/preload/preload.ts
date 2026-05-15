@@ -25,4 +25,13 @@ contextBridge.exposeInMainWorld('vkAPI', {
   checkSession: () => ipcRenderer.invoke('vk:check-session'),
   resetSession: () => ipcRenderer.invoke('vk:reset-session'),
   getGroupInfo: (groupValue: string) => ipcRenderer.invoke('vk:get-group-info', groupValue),
+
+  publishTextPost: (payload: {
+    text: string;
+    debug: boolean;
+    imagePaths?: string[];
+    publishToWall: boolean;
+    publishToGroup: boolean;
+    groupValue?: string;
+  }) => ipcRenderer.invoke('vk:publish-text-post', payload),
 });

@@ -18,14 +18,6 @@ type OkAPI = {
     openLogin: (url?: string) => Promise<OkResult>;
     checkSession: () => Promise<OkResult>;
     resetSession: () => Promise<OkResult>;
-    publishTextPost: (payload: {
-        text: string;
-        debug: boolean;
-        imagePaths?: string[];
-        publishToWall: boolean;
-        publishToGroup: boolean;
-        groupValue?: string;
-    }) => Promise<OkResult>;
 };
 
 
@@ -37,34 +29,10 @@ function initOkRenderer() {
 
     const openOkBtn = document.getElementById('openOkBtn') as HTMLButtonElement | null;
     const resetOkBtn = document.getElementById('resetOkBtn') as HTMLButtonElement | null;
-    const publishOkBtn = document.getElementById('publishOkBtn') as HTMLButtonElement | null;
-
-    const postText = document.getElementById('postText') as HTMLTextAreaElement | null;
-    const debugMode = document.getElementById('debugMode') as HTMLInputElement | null;
-    const postImage = document.getElementById('postImage') as HTMLInputElement | null;
-
-    if (postImage) {
-        const clearPostImageBtn = document.createElement('button');
-        clearPostImageBtn.type = 'button';
-        clearPostImageBtn.className = 'clear-input-btn';
-        clearPostImageBtn.title = 'Очистить картинку';
-        clearPostImageBtn.textContent = '🗑';
-
-        postImage.insertAdjacentElement('afterend', clearPostImageBtn);
-        postImage.parentElement?.classList.add('input-with-clear');
-
-        clearPostImageBtn.addEventListener('click', () => {
-            postImage.value = '';
-        });
-    }
-
-    const publishToWall = document.getElementById('publishToWall') as HTMLInputElement | null;
-    const publishToGroup = document.getElementById('publishToGroup') as HTMLInputElement | null;
     const okGroupField = document.getElementById('okGroupField');
     const okGroupInput = document.getElementById('okGroupInput') as HTMLInputElement | null;
     const okGroupNameRow = document.getElementById('okGroupNameRow');
     const okGroupName = document.getElementById('okGroupName');
-
     const OK_GROUP_STORAGE_KEY = 'agent003.okGroupValue';
 
     if (okGroupInput) {
@@ -130,6 +98,13 @@ function initOkRenderer() {
         clearOkGroupBtn.addEventListener('click', () => {
             okGroupInput.value = '';
             localStorage.removeItem(OK_GROUP_STORAGE_KEY);
+
+            okGroupNameRow?.classList.add('hidden');
+
+            if (okGroupName) {
+                okGroupName.textContent = 'не проверена';
+            }
+
             okGroupInput.focus();
         });
     }
@@ -350,54 +325,6 @@ function initOkRenderer() {
             setOkDisconnected(getErrorMessage(error, 'Ошибка сброса сессии OK.'));
         }
     });
-
-    publishOkBtn?.addEventListener('click', async () => {
-        const text = postText?.value.trim() || '';
-
-        if (!text) {
-            showStatus('Введите текст поста.');
-            return;
-        }
-
-        if (!publishToWall?.checked && !publishToGroup?.checked) {
-            showStatus('Выберите, куда публиковать: на стену OK или в группу OK.');
-            return;
-        }
-
-        if (publishToGroup?.checked && !okGroupInput?.value.trim()) {
-            showStatus('Укажите ID или ссылку группы OK.');
-            return;
-        }
-
-        try {
-            publishOkBtn.disabled = true;
-            showStatus('Публикуем пост в OK...');
-
-            const imagePaths = Array.from(postImage?.files || [])
-                .map((file) => (file as File & { path?: string }).path)
-                .filter((path): path is string => Boolean(path));
-
-            const result = await appWindow.okAPI?.publishTextPost({
-                text,
-                debug: Boolean(debugMode?.checked),
-                imagePaths,
-                publishToWall: Boolean(publishToWall?.checked),
-                publishToGroup: Boolean(publishToGroup?.checked),
-                groupValue: okGroupInput?.value.trim() || undefined,
-            });
-
-            if (result?.success) {
-                showStatus(result.message || 'Пост опубликован.');
-            } else {
-                showStatus(result?.message || 'Не удалось опубликовать пост.');
-            }
-        } catch (error) {
-            showStatus(getErrorMessage(error, 'Ошибка публикации.'));
-        } finally {
-            publishOkBtn.disabled = false;
-        }
-    });
-
 
 
     checkOkSessionOnStart();
