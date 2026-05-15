@@ -29,26 +29,21 @@
 
         <div id="okProfileBox" class="auth-row hidden">
           <label>Аккаунт</label>
-
           <div id="okProfileName" class="profile-name-input"></div>
 
           <button id="okProfileLink" class="clear-input-btn open-group-btn" title="Открыть профиль OK"
             type="button">↗</button>
-
-          <button id="resetOkBtn" class="icon-btn" title="Сменить аккаунт OK"
-            type="button">🗑</button>
+          <button id="resetOkBtn" class="icon-btn" title="Сменить аккаунт OK" type="button">🗑</button>
         </div>
 
         <div id="okGroupField" class="auth-row hidden">
           <label for="okGroupInput">ID группы</label>
-
           <input id="okGroupInput" type="text"
             placeholder="ID группы или ссылка, например https://ok.ru/group/53735043432516" />
         </div>
 
         <div id="okGroupNameRow" class="auth-row hidden">
           <label>Группа</label>
-
           <div id="okGroupName" class="profile-name-input">не проверена</div>
         </div>
 
@@ -56,23 +51,71 @@
           <button id="openOkBtn" type="button">Подключение OK</button>
         </div>
       </section>
+
+      <section class="card">
+        <div class="card-header">
+          <span id="vkStatusBadge" class="badge disconnected">VK не подключён</span>
+        </div>
+
+        <div id="vkProfileBox" class="auth-row">
+          <label>Аккаунт</label>
+          <div id="vkProfileName" class="profile-name-input">не подключён</div>
+
+          <button id="vkProfileLink" class="clear-input-btn open-group-btn" title="Открыть профиль VK"
+            type="button">↗</button>
+          <button id="resetVkBtn" class="icon-btn" title="Сменить аккаунт VK" type="button">🗑</button>
+        </div>
+
+        <div id="vkGroupField" class="auth-row">
+          <label for="vkGroupInput">ID группы</label>
+          <input id="vkGroupInput" type="text"
+            placeholder="ID группы или ссылка, например https://vk.com/club123456789" />
+        </div>
+
+        <div id="vkGroupNameRow" class="auth-row">
+          <label>Группа</label>
+          <div id="vkGroupName" class="profile-name-input">не проверена</div>
+        </div>
+
+        <div class="actions">
+          <button id="openVkBtn" type="button">Подключение VK</button>
+        </div>
+      </section>
     </div>
 
     <div id="publishTabView" class="tab-view">
       <section class="card">
-        <div class="platform-target-card">
-          <div class="platform-target-title">Одноклассники</div>
+        <div class="platform-targets-row">
+          <div class="platform-target-card">
+            <div class="platform-target-title">Одноклассники</div>
 
-          <div class="target-box">
-            <label class="checkbox-label">
-              <input id="publishToWall" type="checkbox" checked />
-              На стену OK
-            </label>
+            <div class="target-box">
+              <label class="checkbox-label">
+                <input id="publishToWall" type="checkbox" checked />
+                На стену OK
+              </label>
 
-            <label class="checkbox-label">
-              <input id="publishToGroup" type="checkbox" />
-              В группу OK
-            </label>
+              <label class="checkbox-label">
+                <input id="publishToGroup" type="checkbox" />
+                В группу OK
+              </label>
+            </div>
+          </div>
+
+          <div class="platform-target-card">
+            <div class="platform-target-title">ВКонтакте</div>
+
+            <div class="target-box">
+              <label class="checkbox-label">
+                <input id="publishToVkWall" type="checkbox" />
+                На стену VK
+              </label>
+
+              <label class="checkbox-label">
+                <input id="publishToVkGroup" type="checkbox" />
+                В группу VK
+              </label>
+            </div>
           </div>
         </div>
 
@@ -87,7 +130,7 @@
         </div>
 
         <button id="publishOkBtn" class="publish-btn" type="button">
-          Опубликовать в OK
+          Опубликовать
         </button>
 
         <div id="statusBox" class="status hidden"></div>

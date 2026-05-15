@@ -483,3 +483,15 @@ input[type="file"] {
   font-weight: 900;
   color: #1e293b;
 }
+
+.platform-targets-row {
+  display: flex;
+  gap: 18px;
+  align-items: stretch;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.platform-targets-row .platform-target-card {
+  margin-bottom: 0;
+}
