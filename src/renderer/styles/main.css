@@ -188,19 +188,20 @@ button:disabled {
 }
 
 .icon-btn {
-  width: 42px;
-  height: 42px;
+  width: 46px;
+  height: 46px;
   padding: 0;
   border-radius: 12px;
-  background: #fee2e2;
-  color: #b91c1c;
+  background: #f1f5f9;
+  color: #64748b;
   font-size: 16px;
   font-weight: 900;
   box-shadow: none;
 }
 
 .icon-btn:hover {
-  background: #fecaca;
+  background: #e2e8f0;
+  color: #475569;
   box-shadow: none;
 }
 
@@ -385,13 +386,14 @@ input[type="file"] {
   height: 46px;
   padding: 0;
   border-radius: 12px;
-  background: #fee2e2;
-  color: #b91c1c;
+  background: #f1f5f9;
+  color: #64748b;
   box-shadow: none;
 }
 
 .clear-input-btn:hover {
-  background: #fecaca;
+  background: #e2e8f0;
+  color: #475569;
   box-shadow: none;
 }
 
@@ -540,13 +542,11 @@ input[type="file"] {
   border: 1px solid transparent;
   background:
     linear-gradient(var(--field), var(--field)) padding-box,
-    conic-gradient(
-      from var(--border-angle),
+    conic-gradient(from var(--border-angle),
       transparent 0deg,
       transparent 250deg,
       #6366f1 300deg,
-      #4f46e5 360deg
-    ) border-box;
+      #4f46e5 360deg) border-box;
   animation: group-border-spin 1s linear infinite;
 }
 
@@ -554,11 +554,9 @@ input[type="file"] {
   border: 1px solid transparent;
   background:
     linear-gradient(var(--field), var(--field)) padding-box,
-    conic-gradient(
-      from -90deg,
+    conic-gradient(from -90deg,
       #6366f1 0deg,
       #4f46e5 var(--group-progress-deg, 12deg),
       transparent var(--group-progress-deg, 12deg),
-      transparent 360deg
-    ) border-box;
+      transparent 360deg) border-box;
 }
