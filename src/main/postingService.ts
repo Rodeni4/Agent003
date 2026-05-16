@@ -1,4 +1,5 @@
 import { chromium, Page } from 'playwright';
+import { getPublishErrorMessage } from './publishErrorMessage';
 
 export type PublishTextPostPayload = {
   text: string;
@@ -216,9 +217,7 @@ export async function publishOkTextPost(
   } catch (error) {
     return {
       success: false,
-      message: error instanceof Error
-        ? `Ошибка публикации OK: ${error.message}`
-        : 'Ошибка публикации OK.',
+      message: getPublishErrorMessage(error, 'OK'),
     };
   } finally {
     await context.close().catch(() => undefined);

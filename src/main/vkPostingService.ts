@@ -1,4 +1,5 @@
 import { chromium, Page } from 'playwright';
+import { getPublishErrorMessage } from './publishErrorMessage';
 
 export type PublishVkTextPostPayload = {
     text: string;
@@ -299,9 +300,7 @@ export async function publishVkTextPost(
     } catch (error) {
         return {
             success: false,
-            message: error instanceof Error
-                ? `Ошибка публикации VK: ${error.message}`
-                : 'Ошибка публикации VK.',
+            message: getPublishErrorMessage(error, 'VK'),
         };
     } finally {
         await context.close().catch(() => undefined);

@@ -50,7 +50,7 @@ function initPublishRenderer() {
     if (postImage) {
         const clearPostImageBtn = document.createElement('button');
         clearPostImageBtn.type = 'button';
-        clearPostImageBtn.className = 'clear-input-btn';
+        clearPostImageBtn.className = 'icon-btn';
         clearPostImageBtn.title = 'Очистить картинку';
         clearPostImageBtn.textContent = '🗑';
 
@@ -62,11 +62,14 @@ function initPublishRenderer() {
         });
     }
 
-    function showStatus(message: string) {
+    function showStatus(
+        message: string,
+        type: 'error' | 'success' | 'pending' = 'pending'
+    ) {
         if (!statusBox) return;
 
         statusBox.textContent = message;
-        statusBox.classList.remove('hidden');
+        statusBox.className = `status ${type}`;
     }
 
     function restorePublishTargets() {
@@ -111,6 +114,18 @@ function initPublishRenderer() {
             .filter((path): path is string => Boolean(path));
     }
 
+    function hasErrors(results: string[]) {
+        return results.some((message) => {
+            const normalizedMessage = message.toLowerCase();
+
+            return (
+                normalizedMessage.includes('ошибка') ||
+                normalizedMessage.includes('не получен') ||
+                normalizedMessage.includes('не удалось')
+            );
+        });
+    }
+
     restorePublishTargets();
 
     publishToWall?.addEventListener('change', savePublishTargets);
@@ -122,7 +137,7 @@ function initPublishRenderer() {
         const text = postText?.value.trim() || '';
 
         if (!text) {
-            showStatus('Введите текст поста.');
+            showStatus('Введите текст поста.', 'error');
             return;
         }
 
@@ -130,17 +145,17 @@ function initPublishRenderer() {
         const vkSelected = Boolean(publishToVkWall?.checked || publishToVkGroup?.checked);
 
         if (!okSelected && !vkSelected) {
-            showStatus('Выберите, куда публиковать пост.');
+            showStatus('Выберите, куда публиковать пост.', 'error');
             return;
         }
 
         if (publishToGroup?.checked && !okGroupInput?.value.trim()) {
-            showStatus('Укажите ID или ссылку группы OK.');
+            showStatus('Укажите ID или ссылку группы OK.', 'error');
             return;
         }
 
         if (publishToVkGroup?.checked && !vkGroupInput?.value.trim()) {
-            showStatus('Укажите ID или ссылку группы VK.');
+            showStatus('Укажите ID или ссылку группы VK.', 'error');
             return;
         }
 
@@ -149,14 +164,14 @@ function initPublishRenderer() {
         }
 
         try {
-            showStatus('Публикуем пост...');
+            showStatus('Публикуем пост...', 'pending');
 
             const results: string[] = [];
 
             if (okSelected) {
                 try {
                     results.push('OK: начинаем публикацию...');
-                    showStatus(results.join('\n'));
+                    showStatus(results.join('\n'), 'pending');
 
                     const result = await appWindow.okAPI?.publishTextPost({
                         text,
@@ -168,20 +183,20 @@ function initPublishRenderer() {
                     });
 
                     results[results.length - 1] = result?.message || 'OK: ответ не получен.';
-                    showStatus(results.join('\n'));
+                    showStatus(results.join('\n'), result?.success ? 'success' : 'error');
                 } catch (error) {
                     results[results.length - 1] = error instanceof Error
                         ? `OK: ошибка — ${error.message}`
                         : 'OK: ошибка публикации.';
 
-                    showStatus(results.join('\n'));
+                    showStatus(results.join('\n'), 'error');
                 }
             }
 
             if (vkSelected) {
                 try {
                     results.push('VK: начинаем публикацию...');
-                    showStatus(results.join('\n'));
+                    showStatus(results.join('\n'), 'pending');
 
                     const result = await appWindow.vkAPI?.publishTextPost({
                         text,
@@ -193,17 +208,17 @@ function initPublishRenderer() {
                     });
 
                     results[results.length - 1] = result?.message || 'VK: ответ не получен.';
-                    showStatus(results.join('\n'));
+                    showStatus(results.join('\n'), result?.success ? 'success' : 'error');
                 } catch (error) {
                     results[results.length - 1] = error instanceof Error
                         ? `VK: ошибка — ${error.message}`
                         : 'VK: ошибка публикации.';
 
-                    showStatus(results.join('\n'));
+                    showStatus(results.join('\n'), 'error');
                 }
             }
 
-            showStatus(results.join('\n'));
+            showStatus(results.join('\n'), hasErrors(results) ? 'error' : 'success');
         } finally {
             if (publishBtn) {
                 publishBtn.disabled = false;
