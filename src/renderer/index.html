@@ -9,12 +9,6 @@
 
 <body>
   <main class="app">
-    <section class="debug-panel">
-      <label class="debug-label">
-        <input id="debugMode" type="checkbox" />
-        Отладка
-      </label>
-    </section>
 
     <nav class="tabs">
       <button id="authTabBtn" class="tab-btn active" type="button">Авторизация</button>
@@ -127,9 +121,18 @@
           <input id="postImage" type="file" accept="image/*" multiple />
         </div>
 
-        <button id="publishOkBtn" class="publish-btn" type="button">
-          Опубликовать
-        </button>
+        <div class="publish-actions-row">
+          <button id="publishOkBtn" class="publish-btn" type="button">
+            Опубликовать
+          </button>
+
+          <section class="debug-panel publish-debug-panel">
+            <label class="debug-label">
+              <input id="debugMode" type="checkbox" />
+              Отладка
+            </label>
+          </section>
+        </div>
 
         <div id="statusBox" class="status hidden"></div>
       </section>
